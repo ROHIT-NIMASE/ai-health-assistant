@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Health Assistant</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>AI Health Assistant</h1>
+  </header>
+
+  <main>
+    <form id="patient-form">
+      <div class="card">
+        <h2>Patient Information</h2>
+
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" />
+        </div>
+
+        <div class="form-group">
+          <label for="age">Age</label>
+          <input type="number" id="age" name="age" />
+        </div>
+
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender">
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" />
+        </div>
+
+        <div class="form-group">
+          <label for="city">City</label>
+          <input type="text" id="city" name="city" />
+        </div>
+
+        <div class="form-group">
+          <label for="medical-history">Medical History / Notes</label>
+          <textarea id="medical-history" name="medical-history"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Symptoms</h2>
+
+        <div class="form-group">
+          <label>Common Symptoms</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" name="symptom" value="Fever" /> Fever</label>
+            <label class="checkbox-item"><input type="checkbox" name="symptom" value="Cough" /> Cough</label>
+            <label class="checkbox-item"><input type="checkbox" name="symptom" value="Headache" /> Headache</label>
+            <label class="checkbox-item"><input type="checkbox" name="symptom" value="Cold" /> Cold</label>
+            <label class="checkbox-item"><input type="checkbox" name="symptom" value="Body Pain" /> Body Pain</label>
+            <label class="checkbox-item"><input type="checkbox" name="symptom" value="Stomach Pain" /> Stomach Pain</label>
+            <label class="checkbox-item"><input type="checkbox" name="symptom" value="Other" /> Other</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="free-text-symptoms">Describe Symptoms (free text)</label>
+          <textarea id="free-text-symptoms" name="free-text-symptoms"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="duration">Duration</label>
+          <input type="text" id="duration" name="duration" placeholder="e.g. 2 days" />
+        </div>
+
+        <div class="form-group">
+          <label for="additional-notes">Additional Notes</label>
+          <textarea id="additional-notes" name="additional-notes"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" id="generate-btn">Generate AI Summary</button>
+
+      <p class="disclaimer">
+        This AI-generated information is for informational and educational purposes only.
+        It is not a medical diagnosis or medical advice. Please consult a qualified healthcare
+        professional for medical decisions.
+      </p>
+    </form>
+
+    <div class="card" id="result-card" style="display: none;">
+      <h2>AI Summary</h2>
+      <div id="result-content"></div>
+    </div>
+  </main>
+</body>
+</html>
