@@ -13,22 +13,36 @@
 
   <main>
     <form id="patient-form">
-      <div class="card">
+            <div class="card">
         <h2>Patient Information</h2>
 
         <div class="form-group">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" />
+          <label for="name">Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            autocomplete="name"
+            maxlength="100"
+            required
+          />
         </div>
 
         <div class="form-group">
-          <label for="age">Age</label>
-          <input type="number" id="age" name="age" />
+          <label for="age">Age <span class="required">*</span></label>
+          <input
+            type="number"
+            id="age"
+            name="age"
+            min="0"
+            max="120"
+            required
+          />
         </div>
 
         <div class="form-group">
-          <label for="gender">Gender</label>
-          <select id="gender" name="gender">
+          <label for="gender">Gender <span class="required">*</span></label>
+          <select id="gender" name="gender" required>
             <option value="">Select</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
@@ -37,18 +51,27 @@
         </div>
 
         <div class="form-group">
-          <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" name="phone" />
+          <label for="phone">Phone Number <span class="required">*</span></label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            autocomplete="tel"
+            pattern="[0-9]{10}"
+            maxlength="10"
+            placeholder="10-digit number"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label for="city">City</label>
-          <input type="text" id="city" name="city" />
+          <input type="text" id="city" name="city" autocomplete="address-level2" maxlength="100" />
         </div>
 
         <div class="form-group">
           <label for="medical-history">Medical History / Notes</label>
-          <textarea id="medical-history" name="medical-history"></textarea>
+          <textarea id="medical-history" name="medical-history" maxlength="500"></textarea>
         </div>
       </div>
 
@@ -74,8 +97,8 @@
         </div>
 
         <div class="form-group">
-          <label for="duration">Duration</label>
-          <input type="text" id="duration" name="duration" placeholder="e.g. 2 days" />
+          <label for="duration">Duration <span class="required">*</span></label>
+          <input type="text" id="duration" name="duration" placeholder="e.g. 2 days" required />
         </div>
 
         <div class="form-group">
