@@ -5,9 +5,10 @@ const freeTextSymptoms = document.getElementById("free-text-symptoms");
 const errorBox = document.getElementById("form-error");
 const resultCard = document.getElementById("result-card");
 const resultContent = document.getElementById("result-content");
+const generateBtn = document.getElementById("generate-btn");
 
-// --- Event Listener ---
-patientForm.addEventListener("submit", function (event) {
+// --- Event Listener (async so we can use await inside) ---
+patientForm.addEventListener("submit", async function (event) {
   event.preventDefault();
 
   if (!validateSymptoms()) {
@@ -17,12 +18,57 @@ patientForm.addEventListener("submit", function (event) {
 
   clearError();
 
-  const patientData = collectFormData();
-  console.log("Collected data:", patientData);
-  console.log("As JSON string:", JSON.stringify(patientData));
+  const formData = collectFormData();
 
-  showPreview(patientData);
+  // The database has one "symptoms" list, so for now we merge the
+  // free-text symptoms into it. (We will improve this in Stage 15.)
+  const payload = {
+    ...formData,
+    symptoms: [...formData.symptoms, formData.freeTextSymptoms].filter(Boolean),
+  };
+
+  setLoading(true);
+
+  try {
+    const savedPatient = await sendPatientToServer(payload);
+    showPreview(savedPatient);
+    patientForm.reset();
+  } catch (error) {
+    showError(error.message);
+  } finally {
+    setLoading(false); // runs on success AND failure
+  }
 });
+
+// --- Talking to the backend ---
+async function sendPatientToServer(patientData) {
+  let response;
+
+  try {
+    response = await fetch("/api/patients", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patientData),
+    });
+  } catch (networkError) {
+    // fetch() throws only when the request could not reach the server
+    throw new Error("Could not reach the server. Please check that it is running and try again.");
+  }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (parseError) {
+    throw new Error("The server sent an unexpected response.");
+  }
+
+  // fetch() does NOT throw on 400/500, so we check response.ok ourselves
+  if (!response.ok) {
+    throw new Error(data.error || "Something went wrong. Please try again.");
+  }
+
+  return data;
+}
 
 // --- Data Collection ---
 function collectFormData() {
@@ -54,6 +100,11 @@ function validateSymptoms() {
 }
 
 // --- UI Helpers ---
+function setLoading(isLoading) {
+  generateBtn.disabled = isLoading;
+  generateBtn.textContent = isLoading ? "Generating Summary..." : "Generate AI Summary";
+}
+
 function showError(message) {
   errorBox.textContent = message;
   errorBox.style.display = "block";
