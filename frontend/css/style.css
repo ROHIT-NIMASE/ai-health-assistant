@@ -156,3 +156,12 @@ button:disabled {
 .required {
   color: var(--danger-color);
 }
+.json-preview {
+  background-color: #f3f4f6;
+  border-radius: var(--radius);
+  padding: 12px;
+  font-family: Consolas, monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
