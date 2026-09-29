@@ -7,7 +7,7 @@ const resultCard = document.getElementById("result-card");
 const resultContent = document.getElementById("result-content");
 const generateBtn = document.getElementById("generate-btn");
 
-// --- Event Listener (async so we can use await inside) ---
+// --- Event Listener ---
 patientForm.addEventListener("submit", async function (event) {
   event.preventDefault();
 
@@ -20,8 +20,6 @@ patientForm.addEventListener("submit", async function (event) {
 
   const formData = collectFormData();
 
-  // The database has one "symptoms" list, so for now we merge the
-  // free-text symptoms into it. (We will improve this in Stage 15.)
   const payload = {
     ...formData,
     symptoms: [...formData.symptoms, formData.freeTextSymptoms].filter(Boolean),
@@ -36,7 +34,7 @@ patientForm.addEventListener("submit", async function (event) {
   } catch (error) {
     showError(error.message);
   } finally {
-    setLoading(false); // runs on success AND failure
+    setLoading(false);
   }
 });
 
@@ -51,7 +49,6 @@ async function sendPatientToServer(patientData) {
       body: JSON.stringify(patientData),
     });
   } catch (networkError) {
-    // fetch() throws only when the request could not reach the server
     throw new Error("Could not reach the server. Please check that it is running and try again.");
   }
 
@@ -62,7 +59,6 @@ async function sendPatientToServer(patientData) {
     throw new Error("The server sent an unexpected response.");
   }
 
-  // fetch() does NOT throw on 400/500, so we check response.ok ourselves
   if (!response.ok) {
     throw new Error(data.error || "Something went wrong. Please try again.");
   }
@@ -116,7 +112,6 @@ function clearError() {
 }
 
 function showPreview(data) {
-  // TEMPORARY: replaced by the real AI summary UI in Stage 14
   resultContent.textContent = JSON.stringify(data, null, 2);
   resultContent.classList.add("json-preview");
   resultCard.style.display = "block";

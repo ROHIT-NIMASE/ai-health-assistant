@@ -71,10 +71,25 @@ async function generatePatientSummary(patient) {
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: buildUserPrompt(patient) },
     ],
-    temperature: 0.3, // lower = more consistent, less "creative" — good for structured, safety-critical output
+    temperature: 0.3,
   });
 
   return response.choices[0].message.content;
 }
 
-module.exports = { generatePatientSummary };
+// Strips common wrapping artifacts, then parses into a real object.
+function parseAIResponse(rawText) {
+  let cleaned = rawText.trim();
+
+  cleaned = cleaned.replace(/^```(?:json)?\s*/i, "");
+  cleaned = cleaned.replace(/```\s*$/i, "");
+  cleaned = cleaned.trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch (err) {
+    throw new Error("AI response could not be parsed as JSON");
+  }
+}
+
+module.exports = { generatePatientSummary, parseAIResponse };

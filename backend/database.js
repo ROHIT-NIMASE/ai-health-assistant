@@ -1,11 +1,9 @@
 const Database = require("better-sqlite3");
 const path = require("path");
 
-// Open (or create) the database file
 const dbPath = path.join(__dirname, "..", "database", "clinic.db");
 const db = new Database(dbPath);
 
-// Create the patients table if it doesn't exist yet
 db.exec(`
   CREATE TABLE IF NOT EXISTS patients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,8 +21,6 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `);
-
-// --- Database functions (each uses parameterized queries) ---
 
 function getAllPatients() {
   const rows = db.prepare("SELECT * FROM patients ORDER BY created_at DESC, id DESC").all();
@@ -58,7 +54,6 @@ function createPatient(patient) {
   return getPatientById(result.lastInsertRowid);
 }
 
-// Convert the stored JSON string back into an array
 function parsePatient(row) {
   return { ...row, symptoms: JSON.parse(row.symptoms || "[]") };
 }
