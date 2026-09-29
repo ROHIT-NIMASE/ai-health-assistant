@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const { getAllPatients, getPatientById, createPatient } = require("./database");
-const { testAIConnection } = require("./ai");
+const { generatePatientSummary } = require("./ai");
 
 const app = express();
 const PORT = 3000;
@@ -18,11 +18,23 @@ app.get("/api/patients", (req, res, next) => { /* ... */ });
 app.get("/api/patients/:id", (req, res, next) => { /* ... */ });
 app.post("/api/patients", (req, res, next) => { /* ... */ });
 
-// TEMPORARY — AI test route MUST be above the catch-all below
+// TEMPORARY — for testing the prompt only. Removed in Stage 12.
 app.get("/api/ai-test", async (req, res, next) => {
   try {
-    const reply = await testAIConnection();
-    res.status(200).json({ reply });
+    const dummyPatient = {
+      name: "Test Patient",
+      age: 24,
+      gender: "Male",
+      city: "Pune",
+      medicalHistory: "",
+      symptoms: ["Fever", "Headache"],
+      freeTextSymptoms: "",
+      duration: "2 days",
+      notes: "",
+    };
+
+    const rawReply = await generatePatientSummary(dummyPatient);
+    res.status(200).json({ rawReply });
   } catch (err) {
     next(err);
   }
