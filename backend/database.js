@@ -1,4 +1,4 @@
-const Database = require("better-sqlite3");
+﻿const Database = require("better-sqlite3");
 const path = require("path");
 
 const dbPath = path.join(__dirname, "..", "database", "clinic.db");
@@ -36,8 +36,8 @@ function createPatient(patient) {
   const result = db
     .prepare(
       `INSERT INTO patients
-        (name, age, gender, phone, city, medical_history, symptoms, duration, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        (name, age, gender, phone, city, medical_history, symptoms, duration, notes, ai_summary, attention_level)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .run(
       patient.name,
@@ -48,14 +48,20 @@ function createPatient(patient) {
       patient.medicalHistory || "",
       JSON.stringify(patient.symptoms || []),
       patient.duration || "",
-      patient.notes || ""
+      patient.notes || "",
+      patient.aiSummary ? JSON.stringify(patient.aiSummary) : null,
+      patient.attentionLevel || null
     );
 
   return getPatientById(result.lastInsertRowid);
 }
 
 function parsePatient(row) {
-  return { ...row, symptoms: JSON.parse(row.symptoms || "[]") };
+  return {
+    ...row,
+    symptoms: JSON.parse(row.symptoms || "[]"),
+    ai_summary: row.ai_summary ? JSON.parse(row.ai_summary) : null,
+  };
 }
 
 module.exports = { getAllPatients, getPatientById, createPatient };

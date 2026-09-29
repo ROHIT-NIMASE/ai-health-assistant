@@ -91,10 +91,10 @@ function parseAIResponse(rawText) {
     throw new Error("AI response could not be parsed as JSON");
   }
 }
+
 const ALLOWED_ATTENTION_LEVELS = ["Routine", "Soon", "Urgent"];
 
 // Checks that the parsed AI object has the right fields, types, and values.
-// Throws a descriptive Error naming the exact problem if anything is wrong.
 function validateAISummary(summary) {
   if (!summary || typeof summary !== "object" || Array.isArray(summary)) {
     throw new Error("AI response is not a valid object");
@@ -130,9 +130,7 @@ function validateAISummary(summary) {
     throw new Error("AI response is missing a valid 'disclaimer' string");
   }
 
-  // All checks passed — return the summary unchanged.
   return summary;
 }
 
 module.exports = { generatePatientSummary, parseAIResponse, validateAISummary };
-

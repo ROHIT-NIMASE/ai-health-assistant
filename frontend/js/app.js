@@ -34,8 +34,9 @@ patientForm.addEventListener("submit", async function (event) {
   setLoading(true);
 
   try {
-    const aiSummary = await requestAISummary(payload);
-    renderAISummary(aiSummary);
+    const savedPatient = await requestAISummary(payload);
+    renderAISummary(savedPatient.ai_summary);
+    patientForm.reset();
   } catch (error) {
     showError(error.message);
   } finally {
@@ -118,26 +119,18 @@ function clearError() {
 
 // --- Rendering the AI summary ---
 function renderAISummary(data) {
-  // Badge
   attentionBadge.textContent = data.attention_level;
   attentionBadge.className = "badge " + attentionBadgeClass(data.attention_level);
 
-  // Summary text
   summaryText.textContent = data.summary;
 
-  // Symptoms as pills
   renderPillList(symptomsList, data.symptoms);
 
-  // Duration
   durationText.textContent = data.duration || "Not specified";
 
-  // Missing information
   renderBulletList(missingInfoList, data.missing_information, "No missing information flagged.");
-
-  // Follow-up questions
   renderBulletList(followupList, data.follow_up_questions, "No follow-up questions suggested.");
 
-  // Disclaimer
   aiDisclaimer.textContent = data.disclaimer;
 
   resultCard.style.display = "block";
@@ -147,11 +140,11 @@ function renderAISummary(data) {
 function attentionBadgeClass(level) {
   if (level === "Urgent") return "badge-urgent";
   if (level === "Soon") return "badge-soon";
-  return "badge-routine"; // default/fallback
+  return "badge-routine";
 }
 
 function renderPillList(container, items) {
-  container.innerHTML = ""; // safe: we are clearing, not inserting untrusted text
+  container.innerHTML = "";
 
   if (!items || items.length === 0) {
     container.textContent = "None reported";
@@ -161,13 +154,13 @@ function renderPillList(container, items) {
   items.forEach((item) => {
     const pill = document.createElement("span");
     pill.className = "pill";
-    pill.textContent = item; // safe: textContent, not innerHTML
+    pill.textContent = item;
     container.appendChild(pill);
   });
 }
 
 function renderBulletList(container, items, emptyMessage) {
-  container.innerHTML = ""; // safe: we are clearing, not inserting untrusted text
+  container.innerHTML = "";
 
   if (!items || items.length === 0) {
     const li = document.createElement("li");
@@ -179,7 +172,7 @@ function renderBulletList(container, items, emptyMessage) {
 
   items.forEach((item) => {
     const li = document.createElement("li");
-    li.textContent = item; // safe: textContent, not innerHTML
+    li.textContent = item;
     container.appendChild(li);
   });
 }

@@ -50,7 +50,7 @@ app.get("/api/patients/:id", (req, res, next) => {
   }
 });
 
-// Create a patient
+// Create a patient WITHOUT AI (simple direct-add utility; not used by the main form)
 app.post("/api/patients", (req, res, next) => {
   try {
     const { name, age } = req.body;
@@ -66,7 +66,7 @@ app.post("/api/patients", (req, res, next) => {
   }
 });
 
-// Analyze patient data with AI and return a structured summary
+// Analyze patient data with AI, then save the complete record.
 app.post("/api/analyze", async (req, res, next) => {
   const patient = req.body;
 
@@ -74,6 +74,7 @@ app.post("/api/analyze", async (req, res, next) => {
     return res.status(400).json({ error: "Patient name and age are required" });
   }
 
+  // Step 1: call the AI
   let rawReply;
   try {
     rawReply = await generatePatientSummary(patient);
@@ -82,6 +83,7 @@ app.post("/api/analyze", async (req, res, next) => {
     return res.status(502).json({ error: "The AI service is currently unavailable. Please try again." });
   }
 
+  // Step 2: parse the AI's text into an object
   let aiSummary;
   try {
     aiSummary = parseAIResponse(rawReply);
@@ -90,6 +92,7 @@ app.post("/api/analyze", async (req, res, next) => {
     return res.status(502).json({ error: "The AI returned an unexpected response. Please try again." });
   }
 
+  // Step 3: validate the object's shape and values
   try {
     validateAISummary(aiSummary);
   } catch (validationError) {
@@ -97,7 +100,21 @@ app.post("/api/analyze", async (req, res, next) => {
     return res.status(502).json({ error: "The AI returned an incomplete response. Please try again." });
   }
 
-  res.status(200).json(aiSummary);
+  // Step 4: save patient + AI summary together
+  let savedPatient;
+  try {
+    savedPatient = createPatient({
+      ...patient,
+      aiSummary,
+      attentionLevel: aiSummary.attention_level,
+    });
+  } catch (dbError) {
+    console.error("Database save failed:", dbError.message);
+    return res.status(500).json({ error: "Could not save the patient record. Please try again." });
+  }
+
+  // Step 5: return the full saved record
+  res.status(201).json(savedPatient);
 });
 
 // --- Unknown API routes: return JSON 404 instead of an HTML page ---
