@@ -4,7 +4,7 @@ const cors = require("cors");
 const path = require("path");
 
 const { getAllPatients, getPatientById, createPatient } = require("./database");
-const { generatePatientSummary, parseAIResponse } = require("./ai");
+const { generatePatientSummary, parseAIResponse, validateAISummary } = require("./ai");
 
 const app = express();
 const PORT = 3000;
@@ -88,6 +88,13 @@ app.post("/api/analyze", async (req, res, next) => {
   } catch (parseError) {
     console.error("AI response parse failed:", parseError.message, "Raw reply:", rawReply);
     return res.status(502).json({ error: "The AI returned an unexpected response. Please try again." });
+  }
+
+  try {
+    validateAISummary(aiSummary);
+  } catch (validationError) {
+    console.error("AI response validation failed:", validationError.message, "Parsed reply:", aiSummary);
+    return res.status(502).json({ error: "The AI returned an incomplete response. Please try again." });
   }
 
   res.status(200).json(aiSummary);

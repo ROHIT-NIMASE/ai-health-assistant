@@ -91,5 +91,48 @@ function parseAIResponse(rawText) {
     throw new Error("AI response could not be parsed as JSON");
   }
 }
+const ALLOWED_ATTENTION_LEVELS = ["Routine", "Soon", "Urgent"];
 
-module.exports = { generatePatientSummary, parseAIResponse };
+// Checks that the parsed AI object has the right fields, types, and values.
+// Throws a descriptive Error naming the exact problem if anything is wrong.
+function validateAISummary(summary) {
+  if (!summary || typeof summary !== "object" || Array.isArray(summary)) {
+    throw new Error("AI response is not a valid object");
+  }
+
+  if (typeof summary.summary !== "string" || summary.summary.trim() === "") {
+    throw new Error("AI response is missing a valid 'summary' string");
+  }
+
+  if (!Array.isArray(summary.symptoms)) {
+    throw new Error("AI response 'symptoms' must be an array");
+  }
+
+  if (typeof summary.duration !== "string") {
+    throw new Error("AI response 'duration' must be a string");
+  }
+
+  if (!Array.isArray(summary.missing_information)) {
+    throw new Error("AI response 'missing_information' must be an array");
+  }
+
+  if (!Array.isArray(summary.follow_up_questions)) {
+    throw new Error("AI response 'follow_up_questions' must be an array");
+  }
+
+  if (!ALLOWED_ATTENTION_LEVELS.includes(summary.attention_level)) {
+    throw new Error(
+      `AI response 'attention_level' must be one of ${ALLOWED_ATTENTION_LEVELS.join(", ")}, got "${summary.attention_level}"`
+    );
+  }
+
+  if (typeof summary.disclaimer !== "string" || summary.disclaimer.trim() === "") {
+    throw new Error("AI response is missing a valid 'disclaimer' string");
+  }
+
+  // All checks passed — return the summary unchanged.
+  return summary;
+}
+
+module.exports = { generatePatientSummary, parseAIResponse, validateAISummary };
+
