@@ -3,9 +3,16 @@ const patientForm = document.getElementById("patient-form");
 const symptomCheckboxes = document.querySelectorAll('input[name="symptom"]');
 const freeTextSymptoms = document.getElementById("free-text-symptoms");
 const errorBox = document.getElementById("form-error");
-const resultCard = document.getElementById("result-card");
-const resultContent = document.getElementById("result-content");
 const generateBtn = document.getElementById("generate-btn");
+
+const resultCard = document.getElementById("result-card");
+const attentionBadge = document.getElementById("attention-badge");
+const summaryText = document.getElementById("summary-text");
+const symptomsList = document.getElementById("symptoms-list");
+const durationText = document.getElementById("duration-text");
+const missingInfoList = document.getElementById("missing-info-list");
+const followupList = document.getElementById("followup-list");
+const aiDisclaimer = document.getElementById("ai-disclaimer");
 
 // --- Event Listener ---
 patientForm.addEventListener("submit", async function (event) {
@@ -19,7 +26,6 @@ patientForm.addEventListener("submit", async function (event) {
   clearError();
 
   const formData = collectFormData();
-
   const payload = {
     ...formData,
     symptoms: [...formData.symptoms, formData.freeTextSymptoms].filter(Boolean),
@@ -28,9 +34,8 @@ patientForm.addEventListener("submit", async function (event) {
   setLoading(true);
 
   try {
-    const savedPatient = await sendPatientToServer(payload);
-    showPreview(savedPatient);
-    patientForm.reset();
+    const aiSummary = await requestAISummary(payload);
+    renderAISummary(aiSummary);
   } catch (error) {
     showError(error.message);
   } finally {
@@ -39,11 +44,11 @@ patientForm.addEventListener("submit", async function (event) {
 });
 
 // --- Talking to the backend ---
-async function sendPatientToServer(patientData) {
+async function requestAISummary(patientData) {
   let response;
 
   try {
-    response = await fetch("/api/patients", {
+    response = await fetch("/api/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patientData),
@@ -95,7 +100,7 @@ function validateSymptoms() {
   return anyCheckboxChecked || freeTextFilled;
 }
 
-// --- UI Helpers ---
+// --- UI Helpers: form state ---
 function setLoading(isLoading) {
   generateBtn.disabled = isLoading;
   generateBtn.textContent = isLoading ? "Generating Summary..." : "Generate AI Summary";
@@ -111,8 +116,70 @@ function clearError() {
   errorBox.style.display = "none";
 }
 
-function showPreview(data) {
-  resultContent.textContent = JSON.stringify(data, null, 2);
-  resultContent.classList.add("json-preview");
+// --- Rendering the AI summary ---
+function renderAISummary(data) {
+  // Badge
+  attentionBadge.textContent = data.attention_level;
+  attentionBadge.className = "badge " + attentionBadgeClass(data.attention_level);
+
+  // Summary text
+  summaryText.textContent = data.summary;
+
+  // Symptoms as pills
+  renderPillList(symptomsList, data.symptoms);
+
+  // Duration
+  durationText.textContent = data.duration || "Not specified";
+
+  // Missing information
+  renderBulletList(missingInfoList, data.missing_information, "No missing information flagged.");
+
+  // Follow-up questions
+  renderBulletList(followupList, data.follow_up_questions, "No follow-up questions suggested.");
+
+  // Disclaimer
+  aiDisclaimer.textContent = data.disclaimer;
+
   resultCard.style.display = "block";
+  resultCard.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function attentionBadgeClass(level) {
+  if (level === "Urgent") return "badge-urgent";
+  if (level === "Soon") return "badge-soon";
+  return "badge-routine"; // default/fallback
+}
+
+function renderPillList(container, items) {
+  container.innerHTML = ""; // safe: we are clearing, not inserting untrusted text
+
+  if (!items || items.length === 0) {
+    container.textContent = "None reported";
+    return;
+  }
+
+  items.forEach((item) => {
+    const pill = document.createElement("span");
+    pill.className = "pill";
+    pill.textContent = item; // safe: textContent, not innerHTML
+    container.appendChild(pill);
+  });
+}
+
+function renderBulletList(container, items, emptyMessage) {
+  container.innerHTML = ""; // safe: we are clearing, not inserting untrusted text
+
+  if (!items || items.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = emptyMessage;
+    li.className = "empty-item";
+    container.appendChild(li);
+    return;
+  }
+
+  items.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = item; // safe: textContent, not innerHTML
+    container.appendChild(li);
+  });
 }

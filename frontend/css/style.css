@@ -147,7 +147,85 @@ button:disabled {
   padding-top: 12px;
   margin-top: 20px;
 }
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
 
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-routine {
+  background-color: #dcfce7;
+  color: var(--success-color);
+}
+
+.badge-soon {
+  background-color: #fef3c7;
+  color: var(--warning-color);
+}
+
+.badge-urgent {
+  background-color: #fee2e2;
+  color: var(--danger-color);
+}
+
+.summary-section {
+  margin-bottom: 18px;
+}
+
+.summary-section h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.summary-section p {
+  font-size: 0.95rem;
+}
+
+.summary-section ul {
+  padding-left: 20px;
+}
+
+.summary-section li {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.empty-item {
+  color: var(--text-muted);
+  font-style: italic;
+  list-style: none;
+  margin-left: -20px;
+}
+
+.pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+}
+
+#result-card .disclaimer {
+  margin-top: 20px;
+}
 .error-message {
   background-color: #fef2f2;
   color: var(--danger-color);

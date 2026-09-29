@@ -118,9 +118,38 @@
       </p>
     </form>
 
-    <div class="card" id="result-card" style="display: none;">
-      <h2>AI Summary</h2>
-      <div id="result-content"></div>
+        <div class="card" id="result-card" style="display: none;">
+      <div class="result-header">
+        <h2>AI Summary</h2>
+        <span id="attention-badge" class="badge"></span>
+      </div>
+
+      <div class="summary-section">
+        <h3>Summary</h3>
+        <p id="summary-text"></p>
+      </div>
+
+      <div class="summary-section">
+        <h3>Symptoms Identified</h3>
+        <div id="symptoms-list" class="pill-list"></div>
+      </div>
+
+      <div class="summary-section">
+        <h3>Duration</h3>
+        <p id="duration-text"></p>
+      </div>
+
+      <div class="summary-section">
+        <h3>Missing Information</h3>
+        <ul id="missing-info-list"></ul>
+      </div>
+
+      <div class="summary-section">
+        <h3>Suggested Follow-up Questions</h3>
+        <ul id="followup-list"></ul>
+      </div>
+
+      <p class="disclaimer" id="ai-disclaimer"></p>
     </div>
   </main>
 
