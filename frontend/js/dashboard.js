@@ -7,17 +7,26 @@ const statUrgent = document.getElementById("stat-urgent");
 const loadingMessage = document.getElementById("loading-message");
 const errorMessage = document.getElementById("error-message");
 const emptyMessage = document.getElementById("empty-message");
+const noResultsMessage = document.getElementById("no-results-message");
 const patientsTable = document.getElementById("patients-table");
 const patientsTableBody = document.getElementById("patients-table-body");
+
+const searchInput = document.getElementById("search-input");
+const filterButtons = document.getElementById("filter-buttons");
+
+// --- State: the full list from the server, and the current filter settings ---
+let allPatients = [];
+let currentSearch = "";
+let currentFilter = "All";
 
 // --- Run as soon as the page is ready ---
 document.addEventListener("DOMContentLoaded", loadDashboard);
 
 async function loadDashboard() {
   try {
-    const patients = await fetchPatients();
-    renderStats(patients);
-    renderTable(patients);
+    allPatients = await fetchPatients();
+    renderStats(allPatients); // stats always reflect ALL patients, not the filtered view
+    applyFiltersAndRender();
   } catch (error) {
     showError(error.message);
   } finally {
@@ -49,6 +58,43 @@ async function fetchPatients() {
   return data;
 }
 
+// --- Search input ---
+searchInput.addEventListener("input", (event) => {
+  currentSearch = event.target.value.trim().toLowerCase();
+  applyFiltersAndRender();
+});
+
+// --- Filter buttons ---
+filterButtons.addEventListener("click", (event) => {
+  const button = event.target.closest(".filter-btn");
+  if (!button) return; // clicked the container, not a button
+
+  currentFilter = button.dataset.filter;
+
+  // Update which button looks "active"
+  filterButtons
+    .querySelectorAll(".filter-btn")
+    .forEach((btn) => btn.classList.remove("active"));
+  button.classList.add("active");
+
+  applyFiltersAndRender();
+});
+
+// --- Filtering logic ---
+function applyFiltersAndRender() {
+  let filtered = allPatients;
+
+  if (currentFilter !== "All") {
+    filtered = filtered.filter((p) => p.attention_level === currentFilter);
+  }
+
+  if (currentSearch !== "") {
+    filtered = filtered.filter((p) => p.name.toLowerCase().includes(currentSearch));
+  }
+
+  renderTable(filtered);
+}
+
 // --- Rendering ---
 function renderStats(patients) {
   const total = patients.length;
@@ -63,15 +109,25 @@ function renderStats(patients) {
 }
 
 function renderTable(patients) {
-  patientsTableBody.innerHTML = ""; // safe: clearing, not inserting untrusted text
+  patientsTableBody.innerHTML = "";
+
+  // Distinguish "no patients ever" from "no patients matching this search/filter"
+  if (allPatients.length === 0) {
+    emptyMessage.style.display = "block";
+    noResultsMessage.style.display = "none";
+    patientsTable.style.display = "none";
+    return;
+  }
 
   if (patients.length === 0) {
-    emptyMessage.style.display = "block";
+    emptyMessage.style.display = "none";
+    noResultsMessage.style.display = "block";
     patientsTable.style.display = "none";
     return;
   }
 
   emptyMessage.style.display = "none";
+  noResultsMessage.style.display = "none";
   patientsTable.style.display = "table";
 
   patients.forEach((patient) => {

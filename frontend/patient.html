@@ -4,14 +4,77 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Patient Details</title>
+  <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/patient.css" />
 </head>
 <body>
   <header>
     <h1>Patient Details</h1>
   </header>
+
   <main>
-    <p>Patient detail content coming in Stage 18.</p>
+    <a href="dashboard.html" class="back-link">&larr; Back to Dashboard</a>
+
+    <div id="loading-message" class="loading-message">Loading patient...</div>
+    <div id="error-message" class="error-message" style="display: none;"></div>
+
+    <div id="patient-content" style="display: none;">
+      <div class="card">
+        <h2>Patient Information</h2>
+        <div class="info-grid">
+          <div><span class="info-label">Name</span><span id="info-name"></span></div>
+          <div><span class="info-label">Age</span><span id="info-age"></span></div>
+          <div><span class="info-label">Gender</span><span id="info-gender"></span></div>
+          <div><span class="info-label">Phone</span><span id="info-phone"></span></div>
+          <div><span class="info-label">City</span><span id="info-city"></span></div>
+          <div><span class="info-label">Registered</span><span id="info-created"></span></div>
+        </div>
+        <div class="info-block">
+          <span class="info-label">Medical History</span>
+          <p id="info-history"></p>
+        </div>
+        <div class="info-block">
+          <span class="info-label">Additional Notes</span>
+          <p id="info-notes"></p>
+        </div>
+      </div>
+
+      <div class="card" id="result-card">
+        <div class="result-header">
+          <h2>AI Summary</h2>
+          <span id="attention-badge" class="badge"></span>
+        </div>
+
+        <div class="summary-section">
+          <h3>Summary</h3>
+          <p id="summary-text"></p>
+        </div>
+
+        <div class="summary-section">
+          <h3>Symptoms Identified</h3>
+          <div id="symptoms-list" class="pill-list"></div>
+        </div>
+
+        <div class="summary-section">
+          <h3>Duration</h3>
+          <p id="duration-text"></p>
+        </div>
+
+        <div class="summary-section">
+          <h3>Missing Information</h3>
+          <ul id="missing-info-list"></ul>
+        </div>
+
+        <div class="summary-section">
+          <h3>Suggested Follow-up Questions</h3>
+          <ul id="followup-list"></ul>
+        </div>
+
+        <p class="disclaimer" id="ai-disclaimer"></p>
+      </div>
+    </div>
   </main>
+
+  <script src="js/patient.js"></script>
 </body>
 </html>

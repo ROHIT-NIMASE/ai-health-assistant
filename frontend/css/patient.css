@@ -1,3 +1,49 @@
 @import url("style.css");
 
-/* Patient detail page styles will go here in Stage 18 */
+.back-link {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.info-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.info-block {
+  margin-top: 12px;
+}
+
+.info-block p {
+  margin-top: 4px;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -34,13 +34,29 @@
 
     <section class="card">
       <h2>Patients</h2>
+            <div class="controls-row">
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Search by patient name..."
+        />
 
+        <div class="filter-buttons" id="filter-buttons">
+          <button type="button" class="filter-btn active" data-filter="All">All</button>
+          <button type="button" class="filter-btn" data-filter="Routine">Routine</button>
+          <button type="button" class="filter-btn" data-filter="Soon">Soon</button>
+          <button type="button" class="filter-btn" data-filter="Urgent">Urgent</button>
+        </div>
+      </div>
       <div id="loading-message" class="loading-message">Loading patients...</div>
       <div id="error-message" class="error-message" style="display: none;"></div>
       <div id="empty-message" class="empty-state" style="display: none;">
         No patients yet. Submissions will appear here.
       </div>
-
+            <div id="no-results-message" class="empty-state" style="display: none;">
+        No patients match your search or filter.
+      </div>
       <table id="patients-table" class="patients-table" style="display: none;">
         <thead>
           <tr>
