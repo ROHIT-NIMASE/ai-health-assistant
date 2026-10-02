@@ -1,3 +1,92 @@
 @import url("style.css");
 
-/* Dashboard-specific styles will go here in Stage 16 */
+.dashboard-main {
+  max-width: 1000px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.stat-routine .stat-value { color: var(--success-color); }
+.stat-soon .stat-value { color: var(--warning-color); }
+.stat-urgent .stat-value { color: var(--danger-color); }
+
+.loading-message {
+  color: var(--text-muted);
+  padding: 20px 0;
+  text-align: center;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 40px 0;
+  font-style: italic;
+}
+
+.patients-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.patients-table th,
+.patients-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.patients-table th {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.patient-row {
+  cursor: pointer;
+}
+
+.patient-row:hover {
+  background-color: var(--bg-color);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .patients-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
