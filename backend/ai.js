@@ -2,7 +2,7 @@ require("dotenv").config();
 const OpenAI = require("openai");
 
 const client = new OpenAI({
-  baseURL: process.env.OLLAMA_BASE_URL,
+ baseURL: process.env.OLLAMA_BASE_URL,
   apiKey: "ollama",
 });
 
