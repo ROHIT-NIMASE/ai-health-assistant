@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-
+const { validatePatientInput } = require("./validation");
 const { getAllPatients, getPatientById, createPatient } = require("./database");
 const { generatePatientSummary, parseAIResponse, validateAISummary } = require("./ai");
 
@@ -66,12 +66,12 @@ app.post("/api/patients", (req, res, next) => {
   }
 });
 
-// Analyze patient data with AI, then save the complete record.
 app.post("/api/analyze", async (req, res, next) => {
   const patient = req.body;
 
-  if (!patient || !patient.name || !patient.age) {
-    return res.status(400).json({ error: "Patient name and age are required" });
+  const validationErrors = validatePatientInput(patient);
+  if (validationErrors.length > 0) {
+    return res.status(400).json({ error: validationErrors.join(". ") });
   }
 
   // Step 1: call the AI

@@ -104,7 +104,9 @@ function validateSymptoms() {
 // --- UI Helpers: form state ---
 function setLoading(isLoading) {
   generateBtn.disabled = isLoading;
-  generateBtn.textContent = isLoading ? "Generating Summary..." : "Generate AI Summary";
+  generateBtn.innerHTML = isLoading
+    ? '<span class="spinner"></span>Generating Summary...'
+    : "Generate AI Summary";
 }
 
 function showError(message) {
