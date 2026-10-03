@@ -2,9 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const { validatePatientInput } = require("./validation");
+
 const { getAllPatients, getPatientById, createPatient } = require("./database");
-const { generatePatientSummary, parseAIResponse, validateAISummary } = require("./ai");
+const { generatePatientSummary, parseAIResponse, validateAISummary, isSummarySafe } = require("./ai");
+const { validatePatientInput } = require("./validation");
 
 const app = express();
 const PORT = 3000;
@@ -53,10 +54,9 @@ app.get("/api/patients/:id", (req, res, next) => {
 // Create a patient WITHOUT AI (simple direct-add utility; not used by the main form)
 app.post("/api/patients", (req, res, next) => {
   try {
-    const { name, age } = req.body;
-
-    if (!name || !age) {
-      return res.status(400).json({ error: "Name and age are required" });
+    const validationErrors = validatePatientInput(req.body);
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ error: validationErrors.join(". ") });
     }
 
     const newPatient = createPatient(req.body);
@@ -66,6 +66,7 @@ app.post("/api/patients", (req, res, next) => {
   }
 });
 
+// Analyze patient data with AI, then save the complete record.
 app.post("/api/analyze", async (req, res, next) => {
   const patient = req.body;
 
@@ -98,6 +99,12 @@ app.post("/api/analyze", async (req, res, next) => {
   } catch (validationError) {
     console.error("AI response validation failed:", validationError.message, "Parsed reply:", aiSummary);
     return res.status(502).json({ error: "The AI returned an incomplete response. Please try again." });
+  }
+
+  // Step 3.5: safety content check — reject responses that slipped past the prompt
+  if (!isSummarySafe(aiSummary)) {
+    console.error("AI response failed safety filter. Summary:", JSON.stringify(aiSummary));
+    return res.status(502).json({ error: "The AI response could not be safely processed. Please try again or rephrase the symptoms." });
   }
 
   // Step 4: save patient + AI summary together

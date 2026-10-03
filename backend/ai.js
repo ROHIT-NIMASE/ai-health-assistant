@@ -132,5 +132,31 @@ function validateAISummary(summary) {
 
   return summary;
 }
+// A non-exhaustive list of terms that should never appear in AI output.
+// This is a backstop, not a substitute for good prompting — see README limitations.
+const UNSAFE_TERMS = [
+  // Common disease/condition names
+  "heart attack", "myocardial infarction", "stroke", "cva",
+  "pneumonia", "tuberculosis", "covid", "influenza", "malaria",
+  "dengue", "typhoid", "appendicitis", "migraine", "diabetes",
+  "cancer", "tumor", "asthma attack", "sepsis", "meningitis",
+  // Prescriptive/diagnostic phrasing
+  "you have", "diagnosed with", "take ", "mg of", "dosage",
+  "prescribe", "prescription",
+];
 
-module.exports = { generatePatientSummary, parseAIResponse, validateAISummary };
+// Scans AI-generated text fields for disease names or prescriptive language.
+// Returns true if the text looks safe, false if it contains a flagged term.
+function isSummarySafe(summary) {
+  const textToCheck = [
+    summary.summary,
+    ...(summary.missing_information || []),
+    ...(summary.follow_up_questions || []),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return !UNSAFE_TERMS.some((term) => textToCheck.includes(term));
+}
+
+module.exports = { generatePatientSummary, parseAIResponse, validateAISummary, isSummarySafe };
